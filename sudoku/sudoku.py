@@ -1,4 +1,4 @@
-import sudoku_error as skr 
+import sudoku.sudoku_error as skr 
 
 class Sudoku:
     """
