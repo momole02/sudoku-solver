@@ -68,10 +68,14 @@ class Sudoku:
             raise skr.SudokuError(f"Can't play at column {j} (>= ${self.matrix_order})",
                                   code="SKR_PLAY")
         
-        if value not in range(1, 1+self.max_cell_value): 
-            raise skr.SudokuError(f"Invalid value {value} for cell ({i},{j}). "
-                                  f"not in [1...{self.max_cell_value}]",
+        if value not in self.omega: 
+            raise skr.SudokuError(f"can't play: invalid value {value} for cell ({i},{j}). "
+                                  f"not in {self.omega}",
                                   code="SKR_PLAY")
+        
+        if self.M[(i,j)] != 0: 
+            raise skr.SudokuError(f"can't play: "
+                                  f"({i}, {j}) have already a value ({self.M[(i,j)]})")
         
         self.M[(i,j)] = value
         self.lines[i].add(value)
@@ -97,7 +101,8 @@ class Sudoku:
         j (int): cell column
         """
         if i >= self.matrix_order or j >= self.matrix_order:
-            raise skr.SudokuError(f"({i}, {j}) is out of range")
+            raise skr.SudokuError(f"can't compute region index "
+                                  f"({i}, {j}) is out of range")
 
         rg_line = i // self.region_matrix_order
         rg_column = j // self.region_matrix_order
@@ -107,12 +112,13 @@ class Sudoku:
 
     def cell_possibilities(self, i, j): 
         """
-        Return the available possibility for the cell (i,j)
+        Return the available possibilities for the cell (i,j)
         i (int): the cell line
         j (int): the cell column
         """
         if i >= self.matrix_order or j >= self.matrix_order:
-            raise skr.SudokuError(f"({i}, {j}) is out of range")
+            raise skr.SudokuError(f" can't get possibilities : "
+                                  f"({i}, {j}) is out of range")
         
         column_poss = self.omega.difference(
             self.columns[i]
@@ -129,6 +135,3 @@ class Sudoku:
         ).intersection(
             region_poss
         )
-
-
-
